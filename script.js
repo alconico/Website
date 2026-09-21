@@ -14,7 +14,11 @@ if (playButton) {
     const icon = playButton.querySelector('.play-icon');
     if (!audioPlayer) return;
     if (audioPlayer.paused) {
-      audioPlayer.play();
+      if (audioPlayer.readyState === 0) audioPlayer.load();
+      audioPlayer.play().catch(() => {
+        playButton.classList.remove('is-playing');
+        playButton.setAttribute('aria-label', 'Audio non disponibile');
+      });
     } else {
       audioPlayer.pause();
     }
@@ -37,5 +41,8 @@ if (audioPlayer && playButton) {
   });
   audioPlayer.addEventListener('ended', () => {
     audioPlayer.currentTime = 0;
+  });
+  audioPlayer.addEventListener('error', () => {
+    playButton.setAttribute('aria-label', 'Audio non disponibile');
   });
 }
